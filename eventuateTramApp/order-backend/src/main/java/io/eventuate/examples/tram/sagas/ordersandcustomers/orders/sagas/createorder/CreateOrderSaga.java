@@ -1,17 +1,21 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.orders.sagas.createorder;
 
+import static io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder.send;
+
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Money;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.commands.ReserveCreditCommand;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.replies.CustomerCreditLimitExceeded;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.replies.CustomerNotFound;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.common.RejectionReason;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.domain.Order;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.domain.OrderRepository;
-import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.common.RejectionReason;
+// import io.eventuate.examples.tram.sagas.ordersandcustomers.products.api.commands.ReserveStockCommand;
+// import io.eventuate.examples.tram.sagas.ordersandcustomers.products.api.replies.ProductNotFound;
+// import io.eventuate.examples.tram.sagas.ordersandcustomers.products.api.replies.ProductStockRemainingExceeded;
 import io.eventuate.tram.commands.consumer.CommandWithDestination;
 import io.eventuate.tram.sagas.orchestration.SagaDefinition;
 import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
-
-import static io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder.send;
 
 public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaData> {
 
@@ -29,6 +33,10 @@ public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaData> {
             .invokeParticipant(this::reserveCredit)
             .onReply(CustomerNotFound.class, this::handleCustomerNotFound)
             .onReply(CustomerCreditLimitExceeded.class, this::handleCustomerCreditLimitExceeded)
+          // .step()
+          //   .invokeParticipant(this::reserveStock)
+          //   .onReply(ProductNotFound.class, this::handleProductNotFound)
+          //   .onReply(ProductStockRemainingExceeded.class, this::handleProductStockRemainingExceeded)
           .step()
             .invokeLocal(this::approve)
           .build();
@@ -61,6 +69,15 @@ public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaData> {
             .to("customerService")
             .build();
   }
+
+  // private CommandWithDestination reserveStock(CreateOrderSagaData data) {
+  //   long orderId = data.getOrderId();
+  //   Long productId = data.getOrderDetails().getProductId();
+  //   Stock stock = data.getOrderDetails().getStock();
+  //   return send(new ReserveStockCommand(productId, orderId, stock))
+  //           .to("productService")
+  //           .build();
+  // }
 
   private void approve(CreateOrderSagaData data) {
     orderRepository.findById(data.getOrderId()).get().approve();

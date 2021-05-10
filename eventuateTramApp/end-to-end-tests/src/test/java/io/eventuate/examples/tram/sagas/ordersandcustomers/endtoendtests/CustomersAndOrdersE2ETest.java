@@ -1,6 +1,7 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.endtoendtests;
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Money;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.apigateway.GetCustomerHistoryResponse;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.webapi.CreateCustomerRequest;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.webapi.CreateCustomerResponse;
@@ -9,6 +10,8 @@ import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.common.Rejecti
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.webapi.CreateOrderRequest;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.webapi.CreateOrderResponse;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.webapi.GetOrderResponse;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.products.webapi.CreateProductRequest;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.products.webapi.CreateProductResponse;
 import io.eventuate.util.test.async.Eventually;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +33,8 @@ import static org.junit.Assert.assertNotNull;
 public class CustomersAndOrdersE2ETest {
 
   private static final String CUSTOMER_NAME = "John";
+  private static final String PRODUCT_NAME = "Laptop";
+  private static final String PRODUCT_DESCRIPTION = "A very powerful computer.";
 
   @Value("${host.name}")
   private String hostName;
@@ -59,9 +64,12 @@ public class CustomersAndOrdersE2ETest {
   public void shouldApprove() {
     CreateCustomerResponse createCustomerResponse = restTemplate.postForObject(baseUrl("customers"),
             new CreateCustomerRequest(CUSTOMER_NAME, new Money("15.00")), CreateCustomerResponse.class);
+    
+    CreateProductResponse createProductResponse = restTemplate.postForObject(baseUrl("products"), new CreateProductRequest(PRODUCT_NAME, new Stock(20), PRODUCT_DESCRIPTION), CreateProductResponse.class);
 
     CreateOrderResponse createOrderResponse = restTemplate.postForObject(baseUrl("orders"),
-            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("12.34")), CreateOrderResponse.class);
+            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("12.34"), createProductResponse.getProductId(), new Stock(10)), CreateOrderResponse.class);
+
 
     assertOrderState(createOrderResponse.getOrderId(), OrderState.APPROVED, null);
   }
@@ -71,8 +79,10 @@ public class CustomersAndOrdersE2ETest {
     CreateCustomerResponse createCustomerResponse = restTemplate.postForObject(baseUrl("customers"),
             new CreateCustomerRequest(CUSTOMER_NAME, new Money("15.00")), CreateCustomerResponse.class);
 
+    CreateProductResponse createProductResponse = restTemplate.postForObject(baseUrl("products"), new CreateProductRequest(PRODUCT_NAME, new Stock(20), PRODUCT_DESCRIPTION), CreateProductResponse.class);
+
     CreateOrderResponse createOrderResponse = restTemplate.postForObject(baseUrl("orders"),
-            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("123.40")), CreateOrderResponse.class);
+            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("123.40"), createProductResponse.getProductId(), new Stock(10)), CreateOrderResponse.class);
 
     assertOrderState(createOrderResponse.getOrderId(), OrderState.REJECTED, RejectionReason.INSUFFICIENT_CREDIT);
   }
@@ -80,8 +90,10 @@ public class CustomersAndOrdersE2ETest {
   @Test
   public void shouldRejectBecauseOfUnknownCustomer() {
 
+    CreateProductResponse createProductResponse = restTemplate.postForObject(baseUrl("products"), new CreateProductRequest(PRODUCT_NAME, new Stock(20), PRODUCT_DESCRIPTION), CreateProductResponse.class);
+
     CreateOrderResponse createOrderResponse = restTemplate.postForObject(baseUrl("orders"),
-            new CreateOrderRequest(Long.MAX_VALUE, new Money("123.40")), CreateOrderResponse.class);
+            new CreateOrderRequest(Long.MAX_VALUE, new Money("123.40"), createProductResponse.getProductId(), new Stock(10)), CreateOrderResponse.class);
 
     assertOrderState(createOrderResponse.getOrderId(), OrderState.REJECTED, RejectionReason.UNKNOWN_CUSTOMER);
   }
@@ -90,9 +102,11 @@ public class CustomersAndOrdersE2ETest {
   public void shouldSupportOrderHistory() {
     CreateCustomerResponse createCustomerResponse = restTemplate.postForObject(baseUrl("customers"),
             new CreateCustomerRequest(CUSTOMER_NAME, new Money("1000.00")), CreateCustomerResponse.class);
+    
+    CreateProductResponse createProductResponse = restTemplate.postForObject(baseUrl("products"), new CreateProductRequest(PRODUCT_NAME, new Stock(20), PRODUCT_DESCRIPTION), CreateProductResponse.class);
 
     CreateOrderResponse createOrderResponse = restTemplate.postForObject(baseUrl("orders"),
-            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("100.00")),
+            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("100.00"), createProductResponse.getProductId(), new Stock(10)),
             CreateOrderResponse.class);
 
     Eventually.eventually(() -> {

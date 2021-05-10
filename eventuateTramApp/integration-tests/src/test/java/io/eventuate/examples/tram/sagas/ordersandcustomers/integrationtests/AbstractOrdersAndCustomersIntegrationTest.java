@@ -1,6 +1,7 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.integrationtests;
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Money;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.Customer;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.service.CustomerService;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.domain.Order;
@@ -34,6 +35,8 @@ public abstract class AbstractOrdersAndCustomersIntegrationTest {
   public void shouldApproveOrder() throws InterruptedException {
     Money creditLimit = new Money("15.00");
     Customer customer = customerService.createCustomer("Fred", creditLimit);
+    Stock stockRemaining = new Stock(20);
+    Product product = productService.createProduct("Laptop", stockRemaining);
     Order order = orderService.createOrder(new OrderDetails(customer.getId(), new Money("12.34")));
 
     assertOrderState(order.getId(), OrderState.APPROVED);

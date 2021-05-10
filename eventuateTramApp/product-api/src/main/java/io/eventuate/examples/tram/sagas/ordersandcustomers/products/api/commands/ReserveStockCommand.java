@@ -6,7 +6,7 @@ import io.eventuate.tram.commands.common.Command;
 public class ReserveStockCommand implements Command {
   private Long orderId;
   private Stock stock;
-  private long productId;
+  private Long productId;
 
   public ReserveStockCommand() {
   }
@@ -35,11 +35,11 @@ public class ReserveStockCommand implements Command {
     this.orderId = orderId;
   }
 
-  public long getProductId() {
+  public Long getProductId() {
     return productId;
   }
 
-  public void setProductId(long productId) {
+  public void setProductId(Long productId) {
     this.productId = productId;
   }
 }

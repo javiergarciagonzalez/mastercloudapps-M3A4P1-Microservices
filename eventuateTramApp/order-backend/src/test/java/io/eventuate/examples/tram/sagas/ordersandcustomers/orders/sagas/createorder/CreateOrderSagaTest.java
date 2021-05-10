@@ -1,6 +1,7 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.orders.sagas.createorder;
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Money;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.commands.ReserveCreditCommand;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.replies.CustomerCreditLimitExceeded;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.orders.common.OrderDetails;
@@ -25,7 +26,9 @@ public class CreateOrderSagaTest {
   private OrderRepository orderRepository;
   private Long customerId = 102L;
   private Money orderTotal = new Money("12.34");
-  private OrderDetails orderDetails = new OrderDetails(customerId, orderTotal);
+  private Long productId = 101L;
+  private Stock totalProduct = new Stock(20);
+  private OrderDetails orderDetails = new OrderDetails(customerId, orderTotal, productId, totalProduct);
   private Long orderId = 103L;
 
   private CreateOrderSaga makeCreateOrderSaga() {
