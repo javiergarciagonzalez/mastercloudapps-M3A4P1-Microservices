@@ -4,6 +4,7 @@ import static io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder.
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Money;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.commands.ReleaseCreditCommand;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.commands.ReserveCreditCommand;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.replies.CustomerCreditLimitExceeded;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.replies.CustomerNotFound;
@@ -33,6 +34,7 @@ public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaData> {
             .invokeParticipant(this::reserveCredit)
             .onReply(CustomerNotFound.class, this::handleCustomerNotFound)
             .onReply(CustomerCreditLimitExceeded.class, this::handleCustomerCreditLimitExceeded)
+            .withCompensation(this::releaseCredit)
           .step()
             .invokeParticipant(this::reserveStock)
             .onReply(ProductNotFound.class, this::handleProductNotFound)
@@ -94,5 +96,13 @@ public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaData> {
 
   public void reject(CreateOrderSagaData data) {
     orderRepository.findById(data.getOrderId()).get().reject(data.getRejectionReason());
+  }
+
+   private CommandWithDestination releaseCredit(CreateOrderSagaData data) {
+    long orderId = data.getOrderId();
+    Long customerId = data.getOrderDetails().getCustomerId();
+    return send(new ReleaseCreditCommand(customerId, orderId))
+            .to("customerService")
+            .build();
   }
 }

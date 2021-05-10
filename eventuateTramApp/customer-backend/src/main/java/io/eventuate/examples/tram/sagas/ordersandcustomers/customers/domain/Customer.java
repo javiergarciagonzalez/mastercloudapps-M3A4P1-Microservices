@@ -56,4 +56,10 @@ public class Customer {
     } else
       throw new CustomerCreditLimitExceededException();
   }
+
+   public void releaseCredit(Long orderId) {
+    Money money = creditReservations.remove(orderId);
+    if (money == null)
+      throw new OrderNotFoundException();
+  }
 }
