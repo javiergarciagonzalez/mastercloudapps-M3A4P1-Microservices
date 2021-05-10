@@ -107,24 +107,6 @@ public class AssignmentTests {
     }
 
     //
-    // 2nd TEST
-    // Failed - Insufficient Money
-    //
-    @Test
-    public void shouldNotBeAbleToPlaceAnOrderBecauseOfInsufficientStock() {
-        CreateCustomerResponse createCustomerResponse = restTemplate.postForObject(baseUrl("customers"),
-            new CreateCustomerRequest(CUSTOMER_NAME, new Money("1000.00")), CreateCustomerResponse.class);
-
-        CreateProductResponse createProductResponse = restTemplate.postForObject(baseUrl("products"),
-            new CreateProductRequest(PRODUCT_NAME, new Stock(20), PRODUCT_DESCRIPTION), CreateProductResponse.class);
-
-        CreateOrderResponse createOrderResponse = restTemplate.postForObject(baseUrl("orders"),
-            new CreateOrderRequest(createCustomerResponse.getCustomerId(), new Money("1499.99"), createProductResponse.getProductId(), new Stock(1)), CreateOrderResponse.class);
-
-        assertOrderState(createOrderResponse.getOrderId(), OrderState.REJECTED, RejectionReason.INSUFFICIENT_CREDIT);
-    }
-
-    //
     // 3rd TEST
     // Failed - Insufficient Stock
     //
