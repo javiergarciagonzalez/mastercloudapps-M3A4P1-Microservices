@@ -1,6 +1,7 @@
 dependencies {
     compile project(":common")
     compile project(":order-common")
+    compile project(":product-api")
     compile project(":customer-api")
 
     compile "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl:$eventuateTramSagasVersion"
