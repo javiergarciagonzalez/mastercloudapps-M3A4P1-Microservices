@@ -1,15 +1,17 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.products.webapi;
 
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
+
 public class GetProductResponse {
   private Long productId;
   private String name;
   private String description;
-  private int stock;
+  private Stock stock;
 
   public GetProductResponse() {
   }
 
-  public GetProductResponse(Long productId, String name, int stock, String description) {
+  public GetProductResponse(Long productId, String name, Stock stock, String description) {
     this.productId = productId;
     this.name = name;
     this.stock = stock;
@@ -40,11 +42,11 @@ public class GetProductResponse {
     this.description = description;
   }
 
-  public int getStock() {
+  public Stock getStock() {
     return stock;
   }
 
-  public void setStock(int stock) {
+  public void setStock(Stock stock) {
     this.stock = stock;
   }
 }

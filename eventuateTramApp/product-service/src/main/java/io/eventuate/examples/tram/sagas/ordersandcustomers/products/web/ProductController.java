@@ -25,7 +25,7 @@ public class ProductController {
 
   @RequestMapping(value = "/products", method = RequestMethod.POST)
   public CreateProductResponse createProduct(@RequestBody CreateProductRequest createProductRequest) {
-    Product product = productService.createProduct(createProductRequest.getName(), createProductRequest.getCreditLimit());
+    Product product = productService.createProduct(createProductRequest.getName(), createProductRequest.getStock(), createProductRequest.getDescription());
     return new CreateProductResponse(product.getId());
   }
 
@@ -33,7 +33,7 @@ public class ProductController {
   public ResponseEntity<GetProductResponse> getProduct(@PathVariable Long productId) {
     return productRepository
             .findById(productId)
-            .map(c -> new ResponseEntity<>(new GetProductResponse(c.getId(), c.getName(), c.getCreditLimit()), HttpStatus.OK))
+            .map(p -> new ResponseEntity<>(new GetProductResponse(p.getId(), p.getName(), p.getStock(), p.getDescription()), HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 }

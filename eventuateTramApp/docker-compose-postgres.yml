@@ -46,7 +46,7 @@ services:
       args:
         baseImageVersion: ${EVENTUATE_JAVA_BASE_IMAGE_VERSION?}
     ports:
-      - "8084:8080"
+      - "8083:8080"
     depends_on:
       - postgres
       - kafka
@@ -66,10 +66,11 @@ services:
       args:
         baseImageVersion: ${EVENTUATE_JAVA_BASE_IMAGE_VERSION?}
     ports:
-      - "8083:8080"
+      - "8084:8080"
     environment:
       ORDER_DESTINATIONS_ORDERSERVICEURL: http://orderservice:8080
       CUSTOMER_DESTINATIONS_CUSTOMERSERVICEURL: http://customerservice:8080
+      PRODUCT_DESTINATIONS_PRODUCTSERVICEURL: http://productservice:8080
       JAVA_OPTS: -Ddebug
       APIGATEWAY_TIMEOUT_MILLIS: ${APIGATEWAY_TIMEOUT_MILLIS:-1000}
 

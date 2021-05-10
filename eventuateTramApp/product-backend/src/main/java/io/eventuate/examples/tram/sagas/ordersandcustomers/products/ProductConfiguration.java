@@ -1,9 +1,9 @@
-package io.eventuate.examples.tram.sagas.ordersandProducts.products;
+package io.eventuate.examples.tram.sagas.ordersandcustomers.products;
 
-import io.eventuate.examples.tram.sagas.ordersandProducts.products.domain.ProductRepository;
-import io.eventuate.examples.tram.sagas.ordersandProducts.products.service.ProductCommandHandler;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.products.domain.ProductRepository;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.products.service.ProductCommandHandler;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.products.service.ProductService;
-import io.eventuate.tram.commands.product.CommandDispatcher;
+import io.eventuate.tram.commands.consumer.CommandDispatcher;
 import io.eventuate.tram.sagas.participant.SagaCommandDispatcherFactory;
 import io.eventuate.tram.sagas.spring.participant.SagaParticipantConfiguration;
 import io.eventuate.tram.spring.optimisticlocking.OptimisticLockingDecoratorConfiguration;
@@ -29,12 +29,13 @@ public class ProductConfiguration {
     return new ProductCommandHandler(productService);
   }
 
-  // TODO Exception handler for ProductCreditLimitExceededException
+  // TODO Exception handler for ProductStockLimitExceededException
 
   @Bean
-  public CommandDispatcher productCommandDispatcher(ProductCommandHandler target,
-                                                     SagaCommandDispatcherFactory sagaCommandDispatcherFactory) {
-
+  public CommandDispatcher consumerCommandDispatcher(
+    ProductCommandHandler target,
+    SagaCommandDispatcherFactory sagaCommandDispatcherFactory
+  ) {
     return sagaCommandDispatcherFactory.make("productCommandDispatcher", target.commandHandlerDefinitions());
   }
 

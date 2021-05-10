@@ -1,19 +1,20 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.products.webapi;
 
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
+
 public class CreateProductRequest {
   private String name;
   private String description;
-  private int stock;
+  private Stock stock;
 
   public CreateProductRequest() {
   }
 
-  public CreateProductRequest(String name, int stock, String description) {
+  public CreateProductRequest(String name, Stock stock, String description) {
     this.name = name;
     this.stock = stock;
     this.description = description;
   }
-
 
   public String getName() {
     return name;
@@ -23,7 +24,7 @@ public class CreateProductRequest {
     return description;
   }
 
-  public int getStock() {
+  public Stock getStock() {
     return stock;
   }
 }

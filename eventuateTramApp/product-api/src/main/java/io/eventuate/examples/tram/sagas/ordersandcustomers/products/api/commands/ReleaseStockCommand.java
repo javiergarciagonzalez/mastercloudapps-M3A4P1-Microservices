@@ -2,5 +2,5 @@ package io.eventuate.examples.tram.sagas.ordersandcustomers.products.api.command
 
 import io.eventuate.tram.commands.common.Command;
 
-public class UpdateDescriptionCommand implements Command {
+public class ReleaseStockCommand implements Command {
 }

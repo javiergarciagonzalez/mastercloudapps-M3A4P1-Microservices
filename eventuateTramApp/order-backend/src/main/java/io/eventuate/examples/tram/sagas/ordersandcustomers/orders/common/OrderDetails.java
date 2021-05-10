@@ -1,6 +1,7 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.orders.common;
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Money;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.commondomain.Stock;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -9,6 +10,11 @@ import javax.persistence.Embedded;
 public class OrderDetails {
 
   private Long customerId;
+
+  private Long productId;
+
+  @Embedded
+  private Stock stock;
 
   @Embedded
   private Money orderTotal;
