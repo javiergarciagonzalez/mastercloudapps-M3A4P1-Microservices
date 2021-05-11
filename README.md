@@ -10,7 +10,7 @@ This repository only contains:
     - Failure order due to insufficient credit
     - Failure order due to insufficient stock
 
-**Disclaimer**: API Gateway has not been improved to also take products in count.
+**Disclaimer**: API Gateway has not been implemented for Product service.
 
 ### Install
 
